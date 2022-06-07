@@ -11,6 +11,8 @@
     * [TCP如何保证传输的可靠性](#TCP如何保证传输的可靠性)
     * [~~什么是TCP粘包？~~](#什么是TCP粘包)
 * 应用层：HTTP和HTTPS
+    * [HTTP报文格式](#HTTP报文格式)
+    * [HTTP请求的一个完整过程](#HTTP请求的一个完整过程)
     * [HTTP和HTTPS有什么区别？](#HTTP和HTTPS有什么区别)
     * [GET与POST的区别？](#GET与POST的区别)
     * [Session与Cookie的区别？](#Session与Cookie的区别)
@@ -249,6 +251,53 @@ https://zh.wikipedia.org/wiki/HTTP/3
 4. 应答机制：接收方收到数据之后，会发送一个确认（通常延迟几分之一秒）；
 5. 超时重发：发送方发出数据之后，启动一个定时器，超时未收到接收方的确认，则重新发送这个数据；
 6. 流量控制：确保接收端能够接收发送方的数据而不会缓冲区溢出
+
+### HTTP报文格式
+
+HTTP的请求报文包括：请求行(request line)、请求头部(header)、空行 和 请求数据(request data) 四个部分组成。
+
+![HTTP请求报文格式](_v_images/20181012111654560.png)
+
+请求行包括： 请求方法，URL(包括参数信息)，协议版本这些信息（GET /admin_ui/rdx/core/images/close.png HTTP/1.1）
+
+请求头部(Header)是一个个的key-value值，比如
+
+Accept-Encoding: gzip, deflate
+User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)
+空行(CR+LF)：请求报文用空行表示header和请求数据的分隔
+
+请求数据：GET方法没有携带数据， POST方法会携带一个body
+
+
+HTTP的响应报文包括：状态行，响应头，空行，数据(响应体)
+
+![HTTP响应报文格式](_v_images/20181012172656929.png)
+
+状态行包括：HTTP版本号，状态码和状态值组成。
+
+响应头类似请求头，是一系列key-value值
+
+Cache-Control: private
+Content-Encoding: gzip
+Server: BWS/1.1
+Set-Cookie: delPer=0; path=/; domain=.baidu.com
+空白行：同上，响应报文也用空白行来分隔header和数据
+
+响应体：响应的data，本例中是一段HTML
+
+ 
+
+### HTTP请求的一个完整过程
+
+建立 TCP 连接（之前可能还有一次DNS域名解析）
+三次握手建立TCP完成后，客户端向服务器发送请求命令，比如 GET https://www.baidu.com?name=xx&addr=xx HTTP1.1
+客户端发送请求头信息，发送完了header后会接着发送一个空白行，GET请求没有数据，POST请求要发送body数据
+服务器接收到以上信息后，开始处理业务，处理完有了结果以后，服务器开始应答
+服务器返回响应头信息，发送完response header以后，再发送一个空白行
+然后服务器向客户端发送数据
+发送完了服务器四次挥手关闭 TCP 连接
+
+
 
 ### HTTP和HTTPS有什么区别？
 
